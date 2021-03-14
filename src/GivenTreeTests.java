@@ -175,8 +175,6 @@ public class GivenTreeTests
         assertEquals(20, t.get(6));
         assertEquals(7,t.size());
 
-
-
     }
 
 

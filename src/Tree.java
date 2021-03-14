@@ -56,30 +56,30 @@ public class Tree {
      */
     ArrayList<Integer> treeArray = new ArrayList<Integer>();
     public int get(int x) {
-        iterator(root);
-        return treeArray.get(x);
+       int value = root.getIndex(x);
+        return value;
     }
-    public void iterator(Node n){
-        if(n == null){
-            return;
-        }
-        if(n.isLeaf()){
-            addKeysToArray(n);
-            return;
-        }
-        iterator(n.childrenList.get(0));
-        treeArray.add(n.data[0]);
-        iterator(n.childrenList.get(1));
-        if(n.data.length == 2){
-            treeArray.add(n.data[1]);
-            iterator(n.childrenList.get(2));
-        }
-    }
-    public void addKeysToArray(Node n){
-        for(int i = 0; i < n.nodeSize; i++){
-            treeArray.add(n.data[i]);
-        }
-    }
+//    public void iterator(Node n){
+//        if(n == null){
+//            return;
+//        }
+//        if(n.isLeaf()){
+//            addKeysToArray(n);
+//            return;
+//        }
+//        iterator(n.childrenList.get(0));
+//        treeArray.add(n.data[0]);
+//        iterator(n.childrenList.get(1));
+//        if(n.data.length == 2){
+//            treeArray.add(n.data[1]);
+//            iterator(n.childrenList.get(2));
+//        }
+//    }
+//    public void addKeysToArray(Node n){
+//        for(int i = 0; i < n.nodeSize; i++){
+//            treeArray.add(n.data[i]);
+//        }
+//    }
 }
 
 class Node {
@@ -230,6 +230,27 @@ class Node {
                 return true;
         }
         return false;
+    }
+
+    public int getIndex(int x){
+        int smallerSubtree = 0;
+        if(isLeaf()){
+            return data[x];
+        }
+        for(int i = 0; i < childrenList.size(); i++){
+            if(x < (smallerSubtree + childrenList.get(i).sizeOfSubtree)){
+                return childrenList.get(i).getIndex(x-smallerSubtree);
+            }
+            else{
+                if(smallerSubtree + childrenList.get(i).sizeOfSubtree + 1 == x+1){
+                    return data[i];
+                }else {
+                    smallerSubtree += (childrenList.get(i).sizeOfSubtree + 1);
+                }
+            }
+        }
+        //look for the largest child
+        return childrenList.get(childrenList.size()-1).getIndex(x);
     }
 }
 
