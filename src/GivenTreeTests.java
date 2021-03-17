@@ -118,7 +118,6 @@ public class GivenTreeTests
 
     }
 
-
     @Test
     public void testDuplicates()
     {
@@ -175,6 +174,79 @@ public class GivenTreeTests
         assertEquals(20, t.get(6));
         assertEquals(7,t.size());
 
+    }
+
+    @Test
+    public void increasing(){
+        Tree t = new Tree();
+        t.insert(1);
+        t.insert(2);
+        t.insert(3);
+        t.insert(4);
+        t.insert(5);
+        t.insert(6);
+        t.insert(7);
+
+        t.insert(8);
+        t.insert(9);
+        t.insert(10);
+        t.insert(11);
+        t.insert(12);
+        t.insert(13);
+        t.insert(14);
+        t.insert(15);
+
+        assertEquals(15, t.size(8));
+        assertEquals(7, t.size(12));
+        assertEquals(7, t.size(4));
+        assertEquals(3, t.size(2));
+        assertEquals(3, t.size(6));
+        assertEquals(1, t.size(1));
+        assertEquals(1, t.size(3));
+        assertEquals(1, t.size(5));
+        assertEquals(1, t.size(7));
+        assertEquals(0, t.size(0));
+
+
+        assertEquals(1, t.get(0));
+        assertEquals(2, t.get(1));
+        assertEquals(3, t.get(2));
+        assertEquals(4, t.get(3));
+        assertEquals(5, t.get(4));
+        assertEquals(6, t.get(5));
+        assertEquals(7, t.get(6));
+    }
+
+    @Test
+    public void decreasing(){
+        Tree t = new Tree();
+        t.insert(7);
+        t.insert(6);
+        t.insert(5);
+        t.insert(4);
+        t.insert(3);
+        t.insert(2);
+        t.insert(1);
+
+
+        assertEquals(7, t.size(4));
+        assertEquals(3, t.size(2));
+        assertEquals(3, t.size(6));
+        assertEquals(1, t.size(1));
+        assertEquals(1, t.size(3));
+        assertEquals(1, t.size(5));
+        assertEquals(1, t.size(7));
+        assertEquals(0, t.size(0));
+        assertEquals(0, t.size(8));
+        assertEquals(0, t.size(12));
+
+        assertEquals(1, t.get(0));
+        assertEquals(2, t.get(1));
+        assertEquals(3, t.get(2));
+        assertEquals(4, t.get(3));
+        assertEquals(5, t.get(4));
+        assertEquals(6, t.get(5));
+        assertEquals(7, t.get(6));
     }
 
 

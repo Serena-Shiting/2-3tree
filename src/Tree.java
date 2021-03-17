@@ -17,17 +17,25 @@ public class Tree {
         }
         Node curNode = root;
         //start from the root, find the right leaf Node to insert
-        while (!curNode.isLeaf()){
-            curNode = curNode.getNextChild(key);
+        //at the same time, check duplicate
+        while (!curNode.isLeaf()) {
+            for (int i = 0; i < curNode.nodeSize; i++) {
+                if (curNode.data[i] == key) {
+                    return false;
+                }
+            }
+                curNode = curNode.getNextChild(key);
         }
-        //insert,if not duplicate
-        if(root.duplicate(key)){
-            return false;
-        } else{
+
+        //found the leaf, check duplicate before insert
+        for (int i = 0; i < curNode.nodeSize; i++) {
+            if (curNode.data[i] == key) {
+                return false;
+            }
+        }
             curNode.insertKey(key);
             size++;
             return true;
-        }
     }
 
     /**
@@ -54,32 +62,10 @@ public class Tree {
      * @param x kind like an index
      * @return item that store at index x
      */
-    ArrayList<Integer> treeArray = new ArrayList<Integer>();
     public int get(int x) {
        int value = root.getIndex(x);
         return value;
     }
-//    public void iterator(Node n){
-//        if(n == null){
-//            return;
-//        }
-//        if(n.isLeaf()){
-//            addKeysToArray(n);
-//            return;
-//        }
-//        iterator(n.childrenList.get(0));
-//        treeArray.add(n.data[0]);
-//        iterator(n.childrenList.get(1));
-//        if(n.data.length == 2){
-//            treeArray.add(n.data[1]);
-//            iterator(n.childrenList.get(2));
-//        }
-//    }
-//    public void addKeysToArray(Node n){
-//        for(int i = 0; i < n.nodeSize; i++){
-//            treeArray.add(n.data[i]);
-//        }
-//    }
 }
 
 class Node {
@@ -103,7 +89,7 @@ class Node {
     public void insertKey(int k) {
         //insert the key to data（sorted in increasing order）even if exceeded capacity
         int i = 0;
-        while(k > data[i] && i < nodeSize){
+        while(i < nodeSize && k > data[i]){
             i++;
         }
         for(int j = nodeSize; j > i; j--){
@@ -141,15 +127,16 @@ class Node {
             Tree.root = parent;
             parent.addChildren(this);
             parent.addChildren(newNode);
+            sizeOfSubtree -= 2;
         }else {
             parent.addChildren(newNode);
+            sizeOfSubtree -= 2;
             parent.insertKey(data[1]);
         }
         newNode.parent = parent;
         nodeSize = 1;
-        sizeOfSubtree -= 2;
         if(childrenList.size() == 4){
-            spiltChildren();
+            spiltChildren(newNode);
         }
 
     }
@@ -170,18 +157,18 @@ class Node {
         }
     }
 
-    public void spiltChildren() {
-        //update sizeOfSubtree
-        parent.childrenList.get(1).sizeOfSubtree += childrenList.get(2).sizeOfSubtree;
-        parent.childrenList.get(1).sizeOfSubtree += childrenList.get(3).sizeOfSubtree;
+    public void spiltChildren(Node newNode) {
+        //update sizeOfSubtree, newNode = parent.childrenList.get(1)
+        newNode.sizeOfSubtree += childrenList.get(2).sizeOfSubtree;
+        newNode.sizeOfSubtree += childrenList.get(3).sizeOfSubtree;
         sizeOfSubtree -= childrenList.get(2).sizeOfSubtree;
         sizeOfSubtree -= childrenList.get(3).sizeOfSubtree;
         //connect children
-        parent.childrenList.get(1).childrenList.add(childrenList.get(2));
-        parent.childrenList.get(1).childrenList.add(childrenList.get(3));
+        newNode.childrenList.add(childrenList.get(2));
+        newNode.childrenList.add(childrenList.get(3));
         //connect parent
-        parent.childrenList.get(1).childrenList.get(0).parent = parent.childrenList.get(1);
-        parent.childrenList.get(1).childrenList.get(1).parent = parent.childrenList.get(1);
+        newNode.childrenList.get(0).parent = newNode;
+        newNode.childrenList.get(1).parent = newNode;
         //remove children
         childrenList.remove(3);
         childrenList.remove(2);
@@ -205,31 +192,16 @@ class Node {
         //if it is leaf, return 0, the whole tree doesn't contain x
         if(!isLeaf())
             return getNextChild(x).findSubtreeRoot(x);
-        else
-            return 0;
+
+        return 0;
     }
 
     public Node getNextChild(int key) {
-        for(int i = 0; i < childrenList.size() - 1; i++){
+        for(int i = 0; i < nodeSize; i++){
             if(key < data[i])
                 return childrenList.get(i);
         }
         return childrenList.get(childrenList.size() - 1);
-    }
-    
-    public boolean duplicate(int key){
-      //  Node curNode = n;
-        for(int i = 0; i < nodeSize; i++){
-            if(data[i] == key) {
-                return true;
-            }
-        }
-        if(!isLeaf()){
-          //  curNode = curNode.;
-            if(getNextChild(key).duplicate(key))
-                return true;
-        }
-        return false;
     }
 
     public int getIndex(int x){
@@ -241,13 +213,10 @@ class Node {
             if(x < (smallerSubtree + childrenList.get(i).sizeOfSubtree)){
                 return childrenList.get(i).getIndex(x-smallerSubtree);
             }
-            else{
-                if(smallerSubtree + childrenList.get(i).sizeOfSubtree + 1 == x+1){
-                    return data[i];
-                }else {
-                    smallerSubtree += (childrenList.get(i).sizeOfSubtree + 1);
-                }
+            if(smallerSubtree + childrenList.get(i).sizeOfSubtree + 1 == x+1){
+                return data[i];
             }
+            smallerSubtree += (childrenList.get(i).sizeOfSubtree + 1);
         }
         //look for the largest child
         return childrenList.get(childrenList.size()-1).getIndex(x);
